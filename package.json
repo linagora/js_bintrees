@@ -21,11 +21,17 @@
     "test": "nodeunit ./test/test_*.js && jshint lib/*.js index.js"
   },
   "dependencies": {
+    "chai": "^3.0.0",
+    "mocha": "^2.2.5"
   },
   "devDependencies": {
-    "nodeunit": "0.7.4",
+    "chai": "^3.0.0",
+    "grunt": "^0.4.5",
+    "grunt-mocha": "^0.4.13",
     "jshint": "0.5.9",
-    "underscore": "1.3.1",
-    "reunion": "0.0.0"
+    "mocha": "^2.2.5",
+    "nodeunit": "0.7.4",
+    "reunion": "0.0.0",
+    "underscore": "1.3.1"
   }
 }
