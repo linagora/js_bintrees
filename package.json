@@ -26,8 +26,9 @@
   },
   "devDependencies": {
     "chai": "^3.0.0",
+    "chai-spies": "^0.6.0",
     "grunt": "^0.4.5",
-    "grunt-mocha": "^0.4.13",
+    "grunt-mocha-test": "^0.12.7",
     "jshint": "0.5.9",
     "mocha": "^2.2.5",
     "nodeunit": "0.7.4",
