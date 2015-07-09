@@ -50,7 +50,7 @@ var printTree = function(tree) {
 
     console.log(str);
 
-    next = next.successor();
+    next = next.next();
   }
 
 };
@@ -139,6 +139,71 @@ describe('the RBTreeByIndex class', function() {
 
     });
   });
+
+  describe('the insertBetween function', function() {
+    it('should be able to insert between empty nodes', function() {
+      tree.insert_between(null, null, 'test');
+
+      expect(tree.size).to.equal(1);
+      expect(tree._root.data).to.equal('test');
+    });
+
+    it('should be able to insert between left and nil', function() {
+      var root = tree.insert(0, 'root');
+
+      var inserted = tree.insert_between(tree._root, null, 'foo');
+
+      expect(root.next()).to.equal(inserted);
+      expect(inserted.prev()).to.equal(root);
+      expect(tree.size).to.equal(2);
+    });
+
+    it('should be able to insert between nil and right', function() {
+      var root = tree.insert(0, 'root');
+
+      var inserted = tree.insert_between(null, tree._root, 'foo');
+
+      expect(root.prev()).to.equal(inserted);
+      expect(inserted.next()).to.equal(root);
+      expect(tree.size).to.equal(2);
+
+    });
+
+    it('should be able to insert between two nodes', function() {
+      var left = tree.insert(0, 'left');
+      var right = tree.insert(1, 'right');
+
+      var inserted = tree.insert_between(left, right, 'middle');
+
+      expect(inserted.prev()).to.equal(left);
+      expect(inserted.next()).to.equal(right);
+      expect(tree.size).to.equal(3);
+    });
+
+    it('should be able to insert 10,001 elements without any error', function() {
+      var expected = [];
+      var nodeList = [];
+      var randIndex, randString;
+      var left, right, node;
+
+      for (var i = 0; i < 10001; i++) {
+        randIndex = Math.floor(Math.random() * (expected.length+1))-1;
+        randString = randomStringGenerator(10);
+
+        left = nodeList[randIndex];
+        right = nodeList[randIndex+1];
+
+        node = tree.insert_between(left, right, randString)
+        expected.splice(randIndex+1, 0, randString);
+        nodeList.splice(randIndex+1, 0, node);
+      }
+
+      checkEquality(tree, expected);
+
+
+    });
+  });
+
 
   describe('the remove function', function() {
     it('should be able to remove a leaf', function() {
@@ -309,14 +374,11 @@ describe('the RBTreeByIndex class', function() {
       });
     });
 
-    it('each should call the cb on each node', function() {
+    it('each should call the cb on each node with its index', function() {
       var spy = chai.spy();
       tree.each(spy);
 
       expect(spy).to.have.been.called.exactly(tree.size);
-      for (var i = 0; i < tree.size; i++) {
-        expect(spy).to.have.been.called.with(tree.find(i));
-      }
     });
   });
 
@@ -332,6 +394,9 @@ describe('the RBTreeByIndex class', function() {
         expect(node.next).to.be.a('function');
         expect(node.prev).to.be.a('function');
         expect(node.depth).to.be.a('function');
+        expect(node.traverse_up).to.be.a('function');
+        expect(node.position).to.be.a('function');
+
       };
 
       tree.eachNode(check);
@@ -352,6 +417,13 @@ describe('the RBTreeByIndex class', function() {
           expect(node.left).to.not.exist;
         }
       }
+    });
+
+    it('should be able to find its position', function() {
+      tree.eachNode(function(node, index) {
+        expect(node.position()).to.equal(index);
+      });
+
     });
   });
 });
