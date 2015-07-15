@@ -71,12 +71,12 @@ describe('the RBTreeByIndex class', function() {
   });
 
   it('should have a size', function() {
-    expect(tree.size).to.equal(0);
+    expect(tree.get_size()).to.equal(0);
 
     tree.insert(0, 'foo');
-    expect(tree.size).to.equal(1);
+    expect(tree.get_size()).to.equal(1);
     tree.remove(0);
-    expect(tree.size).to.equal(0);
+    expect(tree.get_size()).to.equal(0);
   });
 
   describe('the insert function', function() {
@@ -144,7 +144,7 @@ describe('the RBTreeByIndex class', function() {
     it('should be able to insert between empty nodes', function() {
       tree.insert_between(null, null, 'test');
 
-      expect(tree.size).to.equal(1);
+      expect(tree.get_size()).to.equal(1);
       expect(tree._root.data).to.equal('test');
     });
 
@@ -155,7 +155,7 @@ describe('the RBTreeByIndex class', function() {
 
       expect(root.next()).to.equal(inserted);
       expect(inserted.prev()).to.equal(root);
-      expect(tree.size).to.equal(2);
+      expect(tree.get_size()).to.equal(2);
     });
 
     it('should be able to insert between nil and right', function() {
@@ -165,7 +165,7 @@ describe('the RBTreeByIndex class', function() {
 
       expect(root.prev()).to.equal(inserted);
       expect(inserted.next()).to.equal(root);
-      expect(tree.size).to.equal(2);
+      expect(tree.get_size()).to.equal(2);
 
     });
 
@@ -177,7 +177,7 @@ describe('the RBTreeByIndex class', function() {
 
       expect(inserted.prev()).to.equal(left);
       expect(inserted.next()).to.equal(right);
-      expect(tree.size).to.equal(3);
+      expect(tree.get_size()).to.equal(3);
     });
 
     it('should be able to insert 10,001 elements without any error', function() {
@@ -302,7 +302,7 @@ describe('the RBTreeByIndex class', function() {
 
       tree.remove(0);
 
-      expect(tree.size).to.equal(0);
+      expect(tree.get_size()).to.equal(0);
     });
 
     it('should be able to remove 10,001 nodes without error', function() {
@@ -319,7 +319,7 @@ describe('the RBTreeByIndex class', function() {
       // Then remove some randomly
 
       for (var i = 0; i < 10001; i++) {
-        position = Math.floor(Math.random() * (tree.size -1));
+        position = Math.floor(Math.random() * (tree.get_size() -1));
         tree.remove(position);
         array.splice(position, 1);
       }
@@ -378,7 +378,7 @@ describe('the RBTreeByIndex class', function() {
       var spy = chai.spy();
       tree.each(spy);
 
-      expect(spy).to.have.been.called.exactly(tree.size);
+      expect(spy).to.have.been.called.exactly(tree.get_size());
     });
   });
 

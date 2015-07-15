@@ -134,22 +134,41 @@ TreeBase.prototype.iterator = function() {
     return new Iterator(this);
 };
 
+
+TreeBase.prototype.eachNode = function(cb) {
+    var it=this.iterator(), node;
+    var index = 0;
+    while((node = it.next()) !== null) {
+        cb(node, index);
+        index++;
+    }
+};
+
 // calls cb on each node's data, in order
 TreeBase.prototype.each = function(cb) {
-    var it=this.iterator(), data;
-    while((data = it.next()) !== null) {
-        cb(data);
-    }
+    this.eachNode(function(node, index) {
+        cb(node.data, index);
+    });
 };
 
-// calls cb on each node's data, in reverse order
-TreeBase.prototype.reach = function(cb) {
-    var it=this.iterator(), data;
-    while((data = it.prev()) !== null) {
-        cb(data);
+
+TreeBase.prototype.mapNode = function(cb) {
+    var it=this.iterator(), node;
+    var results = [];
+    var index = 0;
+    while((node = it.next()) !== null) {
+        results.push(cb(node, index));
+        index ++;
     }
+    return results;
 };
 
+// calls cb on each node-s data, store the result and return it
+TreeBase.prototype.map = function(cb) {
+    return this.mapNode(function(node, index) {
+        return cb(node.data, index);
+    });
+};
 
 function Iterator(tree) {
     this._tree = tree;
@@ -192,7 +211,7 @@ Iterator.prototype.next = function() {
             this._minNode(this._cursor.right);
         }
     }
-    return this._cursor !== null ? this._cursor.data : null;
+    return this._cursor !== null ? this._cursor : null;
 };
 
 // if null-iterator, returns last node
@@ -223,7 +242,7 @@ Iterator.prototype.prev = function() {
             this._maxNode(this._cursor.left);
         }
     }
-    return this._cursor !== null ? this._cursor.data : null;
+    return this._cursor !== null ? this._cursor : null;
 };
 
 Iterator.prototype._minNode = function(start) {
@@ -243,7 +262,6 @@ Iterator.prototype._maxNode = function(start) {
 };
 
 module.exports = TreeBase;
-
 };
 require.m['__main__'] = function(module, exports) {
 
