@@ -2,6 +2,7 @@
 'use strict';
 
 var RBTreeByIndex = require('../lib/rbtree_by_index');
+var utils = require('../lib/utils');
 
 var expect = require('chai').expect;
 var chai = require('chai');
@@ -47,6 +48,7 @@ var printTree = function(tree) {
     }
 
     str += next.data;
+    str += ' (w =' + next.weight + ')';
 
     console.log(str);
 
@@ -54,6 +56,16 @@ var printTree = function(tree) {
   }
 
 };
+
+var checkTree = function(tree) {
+  var errs = utils.check(tree);
+
+  if (errs.length) {
+    console.log(errs)
+  };
+
+  expect(errs).to.be.true;
+}
 
 describe('the RBTreeByIndex class', function() {
   var tree;
@@ -82,6 +94,8 @@ describe('the RBTreeByIndex class', function() {
   describe('the insert function', function() {
     it('should be able to insert in an empty tree', function() {
       tree.insert(0, 'foo');
+
+      checkTree(tree);
     });
 
     it('should be able to insert on the left of the root', function() {
@@ -90,6 +104,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['left of root', 'root'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to insert on the right of the root', function() {
@@ -98,6 +114,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['root', 'right of root'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to insert at another item\'s place in the tree', function() {
@@ -112,6 +130,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['0', 'before 1', '1', 'before 2', '2'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to do that', function() {
@@ -124,6 +144,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['0', '1', '2', '3', '4'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to insert 10,000 elements without any error', function() {
@@ -137,6 +159,7 @@ describe('the RBTreeByIndex class', function() {
       }
       checkEquality(tree, myArray);
 
+      checkTree(tree);
     });
   });
 
@@ -146,6 +169,8 @@ describe('the RBTreeByIndex class', function() {
 
       expect(tree.get_size()).to.equal(1);
       expect(tree._root.data).to.equal('test');
+
+      checkTree(tree);
     });
 
     it('should be able to insert between left and nil', function() {
@@ -156,6 +181,8 @@ describe('the RBTreeByIndex class', function() {
       expect(root.next()).to.equal(inserted);
       expect(inserted.prev()).to.equal(root);
       expect(tree.get_size()).to.equal(2);
+
+      checkTree(tree);
     });
 
     it('should be able to insert between nil and right', function() {
@@ -167,6 +194,7 @@ describe('the RBTreeByIndex class', function() {
       expect(inserted.next()).to.equal(root);
       expect(tree.get_size()).to.equal(2);
 
+      checkTree(tree);
     });
 
     it('should be able to insert between two nodes', function() {
@@ -178,6 +206,8 @@ describe('the RBTreeByIndex class', function() {
       expect(inserted.prev()).to.equal(left);
       expect(inserted.next()).to.equal(right);
       expect(tree.get_size()).to.equal(3);
+
+      checkTree(tree);
     });
 
     it('should be able to insert 10,001 elements without any error', function() {
@@ -200,7 +230,7 @@ describe('the RBTreeByIndex class', function() {
 
       checkEquality(tree, expected);
 
-
+      checkTree(tree);
     });
   });
 
@@ -216,6 +246,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['1', '2'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to remove the root', function() {
@@ -226,6 +258,7 @@ describe('the RBTreeByIndex class', function() {
 
       tree.remove(2);
 
+      checkTree(tree);
     });
 
     it('should be able to remove a node with only one left child', function() {
@@ -246,6 +279,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['0', '1', '3'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
     it('should be able to remove a node with only one left child', function() {
       tree.insert(0, '3');
@@ -265,6 +300,8 @@ describe('the RBTreeByIndex class', function() {
       var expecting = ['0', '2', '3'];
 
       checkEquality(tree, expecting);
+
+      checkTree(tree);
     });
 
     it('should be able to remove the rightmost node', function() {
@@ -277,6 +314,8 @@ describe('the RBTreeByIndex class', function() {
       tree.remove(4);
 
       checkEquality(tree, [0,1,2,3]);
+
+      checkTree(tree);
     });
 
 
@@ -295,6 +334,7 @@ describe('the RBTreeByIndex class', function() {
       **/
       tree.remove(1);
 
+      checkTree(tree);
     });
 
     it('should be able to remove the last node of the tree', function() {
@@ -303,7 +343,8 @@ describe('the RBTreeByIndex class', function() {
       tree.remove(0);
 
       expect(tree.get_size()).to.equal(0);
-    });
+
+      checkTree(tree);    });
 
     it('should be able to remove 10,001 nodes without error', function() {
       // Note: 10,101 because it looks nicer than '10,000', but for no other reason.
@@ -325,6 +366,8 @@ describe('the RBTreeByIndex class', function() {
       }
 
       checkEquality(tree, array);
+
+      checkTree(tree);
     });
   });
 
@@ -416,7 +459,7 @@ describe('the RBTreeByIndex class', function() {
           expect(node.right).to.not.exist;
           expect(node.left).to.not.exist;
         }
-      }
+      };
     });
 
     it('should be able to find its position', function() {
@@ -424,6 +467,89 @@ describe('the RBTreeByIndex class', function() {
         expect(node.position()).to.equal(index);
       });
 
+    });
+  });
+
+  describe('the utils module', function() {
+    beforeEach(function() {
+      var position, i;
+      for (i = 0; i < 200; i++) {
+        tree.insert(i, 'ins ' + i);
+      }
+
+      // Then remove some randomly
+      for (i = 0; i < 100; i++) {
+        position = Math.floor(Math.random() * (tree.get_size() - 1));
+        tree.remove(position);
+      }
+    });
+
+    it('should expose print and check functions', function() {
+      expect(utils.check).to.be.a('function');
+      expect(utils.print).to.be.a('function');
+    });
+
+    describe('the check function', function() {
+      it('should return true on a good tree', function() {
+        checkTree(tree);      });
+
+      it('should return a list of errors when root is red', function() {
+        tree._root.red = true;
+        expect(utils.check(tree)).to.be.an('array');
+
+        // There might be more than one error if the child of the root
+        // are red
+      });
+
+      it('should return a list of errors if a red node has a left red child', function() {
+        var done = false;
+        tree.eachNode(function(node) {
+          if (!done) {
+            if (node.red && node.left) {
+              node.left.red = true;
+              done = true;
+            }
+          }
+        });
+
+        expect(utils.check(tree)).to.be.an('array');
+      });
+
+      it('should return a list of errors if a red node has a right red child', function() {
+        var done = false;
+        tree.eachNode(function(node) {
+          if (!done) {
+            if (node.red && node.right) {
+              node.right.red = true;
+              done = true;
+            }
+          }
+        });
+
+        expect(utils.check(tree)).to.be.an('array');
+      });
+
+      it('should fail if all the paths leading to a leaf haven\'t the same length', function() {
+        // Get a leaf
+        tree.eachNode(function(node) {
+          node.red = !node.red;
+
+          expect(utils.check(tree)).to.be.an('array');
+
+          node.red = !node.red;
+        });
+
+      });
+
+      it('should fail if the leafs don\'t have the right weight', function() {
+        tree.eachNode(function(node) {
+          node.weight ++;
+
+          expect(utils.check(tree)).to.be.an('array');
+
+          node.weight --;
+        });
+      });
     });
   });
 });
