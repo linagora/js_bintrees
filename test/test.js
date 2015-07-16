@@ -48,11 +48,13 @@ var printTree = function(tree) {
     }
 
     str += next.data;
-    str += ' (w =' + next.weight + ')';
+    str += (next.red ? ' - R' : ' - B');
+
+    str += ' (w=' + next.weight + ')';
 
     console.log(str);
 
-    next = next.next();
+    next = next.next;
   }
 
 };
@@ -61,6 +63,7 @@ var checkTree = function(tree) {
   var errs = utils.check(tree);
 
   if (errs.length) {
+    printTree(tree);
     console.log(errs)
   };
 
@@ -83,12 +86,12 @@ describe('the RBTreeByIndex class', function() {
   });
 
   it('should have a size', function() {
-    expect(tree.get_size()).to.equal(0);
+    expect(tree.size).to.equal(0);
 
     tree.insert(0, 'foo');
-    expect(tree.get_size()).to.equal(1);
+    expect(tree.size).to.equal(1);
     tree.remove(0);
-    expect(tree.get_size()).to.equal(0);
+    expect(tree.size).to.equal(0);
   });
 
   describe('the insert function', function() {
@@ -167,7 +170,7 @@ describe('the RBTreeByIndex class', function() {
     it('should be able to insert between empty nodes', function() {
       tree.insert_between(null, null, 'test');
 
-      expect(tree.get_size()).to.equal(1);
+      expect(tree.size).to.equal(1);
       expect(tree._root.data).to.equal('test');
 
       checkTree(tree);
@@ -178,9 +181,9 @@ describe('the RBTreeByIndex class', function() {
 
       var inserted = tree.insert_between(tree._root, null, 'foo');
 
-      expect(root.next()).to.equal(inserted);
-      expect(inserted.prev()).to.equal(root);
-      expect(tree.get_size()).to.equal(2);
+      expect(root.next).to.equal(inserted);
+      expect(inserted.prev).to.equal(root);
+      expect(tree.size).to.equal(2);
 
       checkTree(tree);
     });
@@ -190,9 +193,9 @@ describe('the RBTreeByIndex class', function() {
 
       var inserted = tree.insert_between(null, tree._root, 'foo');
 
-      expect(root.prev()).to.equal(inserted);
-      expect(inserted.next()).to.equal(root);
-      expect(tree.get_size()).to.equal(2);
+      expect(root.prev).to.equal(inserted);
+      expect(inserted.next).to.equal(root);
+      expect(tree.size).to.equal(2);
 
       checkTree(tree);
     });
@@ -203,9 +206,9 @@ describe('the RBTreeByIndex class', function() {
 
       var inserted = tree.insert_between(left, right, 'middle');
 
-      expect(inserted.prev()).to.equal(left);
-      expect(inserted.next()).to.equal(right);
-      expect(tree.get_size()).to.equal(3);
+      expect(inserted.prev).to.equal(left);
+      expect(inserted.next).to.equal(right);
+      expect(tree.size).to.equal(3);
 
       checkTree(tree);
     });
@@ -259,6 +262,7 @@ describe('the RBTreeByIndex class', function() {
       tree.remove(2);
 
       checkTree(tree);
+
     });
 
     it('should be able to remove a node with only one left child', function() {
@@ -342,7 +346,7 @@ describe('the RBTreeByIndex class', function() {
 
       tree.remove(0);
 
-      expect(tree.get_size()).to.equal(0);
+      expect(tree.size).to.equal(0);
 
       checkTree(tree);    });
 
@@ -360,7 +364,7 @@ describe('the RBTreeByIndex class', function() {
       // Then remove some randomly
 
       for (var i = 0; i < 10001; i++) {
-        position = Math.floor(Math.random() * (tree.get_size() -1));
+        position = Math.floor(Math.random() * (tree.size -1));
         tree.remove(position);
         array.splice(position, 1);
       }
@@ -421,7 +425,7 @@ describe('the RBTreeByIndex class', function() {
       var spy = chai.spy();
       tree.each(spy);
 
-      expect(spy).to.have.been.called.exactly(tree.get_size());
+      expect(spy).to.have.been.called.exactly(tree.size);
     });
   });
 
@@ -434,8 +438,8 @@ describe('the RBTreeByIndex class', function() {
 
     it('should have a next, prev, depth function', function() {
       var check = function(node) {
-        expect(node.next).to.be.a('function');
-        expect(node.prev).to.be.a('function');
+        expect(node.getNext).to.be.a('function');
+        expect(node.getPrev).to.be.a('function');
         expect(node.depth).to.be.a('function');
         expect(node.traverse_up).to.be.a('function');
         expect(node.position).to.be.a('function');
@@ -479,7 +483,7 @@ describe('the RBTreeByIndex class', function() {
 
       // Then remove some randomly
       for (i = 0; i < 100; i++) {
-        position = Math.floor(Math.random() * (tree.get_size() - 1));
+        position = Math.floor(Math.random() * (tree.size - 1));
         tree.remove(position);
       }
     });

@@ -272,6 +272,12 @@ function RBTree(comparator) {
     this._nil = new Node('nil');
     this._nil.red = false;
     this._nil.weight = 0;
+
+    Object.defineProperty(this, 'size', {
+        get: function() {
+            return this._root ? this._root.weight : 0;
+        }
+    });
 }
 
 RBTree.prototype = new TreeBase();
@@ -448,7 +454,7 @@ RBTree.prototype.find = function() {
 **/
 RBTree.prototype.findNode = function(position, fun) {
   // if the weight is 'n', the biggest index is n-1, so we check that position >= size
-  if (position >= this.get_size() || position < 0) {
+  if (position >= this.size || position < 0) {
     return null;
   }
   var node = this._root;
@@ -509,7 +515,7 @@ RBTree.prototype.remove_helper = function(nodeToRemove) {
   if (!nodeToRemove.left || !nodeToRemove.right) {
     nextNode = nodeToRemove;
   } else {
-    nextNode = nodeToRemove.next(function(node) {
+    nextNode = nodeToRemove.getNext(function(node) {
       node.weight -= 1;
     });
   }
@@ -543,6 +549,7 @@ RBTree.prototype.remove_helper = function(nodeToRemove) {
     nodeToRemove.data = nextNode.data;
     nodeToRemove.weight = (nodeToRemove.left? nodeToRemove.left.weight: 0) +
       (nodeToRemove.right? nodeToRemove.right.weight: 0) + 1;
+
   }
 
   if (!nextNode.red) {
@@ -614,17 +621,39 @@ RBTree.prototype.remove_correction = function(node, parent) {
   }
 };
 
-RBTree.prototype.get_size = function() {
-  return (this._root? this._root.weight : 0);
-};
 
-function Node(data) {
-    this.data = data;
+function Node(data, name) {
+    this._dataBindName = name || 'node';
+    this._data = data;
+
     this.left = null;
     this.right = null;
     this.parent = null;
     this.red = true;
     this.weight = 1;
+
+    Object.defineProperty(this, 'next', {
+        get: function() {
+            return this.getNext();
+        }
+    });
+    Object.defineProperty(this, 'prev', {
+        get: function() {
+            return this.getPrev();
+        }
+    });
+
+    Object.defineProperty(this, 'data', {
+        get: function() {
+            return this._data;
+        },
+        set: function(data) {
+            this._data = data;
+            // bind the data to this
+            data[this._dataBindName] = this;
+        }
+    });
+
 }
 
 Node.prototype.get_child = function(side, opposite) {
@@ -680,13 +709,11 @@ Node.prototype.min_tree = function(fun) {
   return node;
 };
 
-
-Node.prototype.next = function(fun) {
+Node.prototype.getNext = function(fun) {
   var node, parent;
   if (this.get_child('right')) {
     return this.get_child('right').min_tree(fun);
   }
-
   if (fun) {
     fun(this);
   }
@@ -695,21 +722,17 @@ Node.prototype.next = function(fun) {
   while (parent && node === parent.get_child('right')) {
     node = parent;
     parent = node.parent;
-
     if (fun) {
       fun(parent);
     }
   }
-
   return parent;
 };
-
-Node.prototype.prev = function(fun) {
+Node.prototype.getPrev = function(fun) {
   var node, parent;
   if (this.get_child('left')) {
     return this.get_child('left').max_tree(fun);
   }
-
   if (fun) {
     fun(this);
   }
@@ -718,14 +741,13 @@ Node.prototype.prev = function(fun) {
   while (parent && node === parent.get_child('left')) {
     node = parent;
     parent = node.parent;
-
     if (fun) {
       fun(parent);
     }
   }
-
   return parent;
 };
+
 
 /** Traverse the tree upwards until it reaches the top. For each node traversed,
   * call the function passed as argument with arguments node, parent.
