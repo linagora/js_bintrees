@@ -104,6 +104,14 @@ describe('the RBTreeByIndex class', function() {
       checkTree(tree);
     });
 
+    it('should return the node inserted on succes', function() {
+      expect(tree.insert(0, 'foo')).to.be.an('object');
+    });
+
+    it('should return null on fail', function() {
+      expect(tree.insert(-1, 'invalid')).to.equal(null);
+    });
+
     it('should be able to insert on the left of the root', function() {
       tree.insert(0, 'root');
       tree.insert(0, 'left of root');
@@ -351,7 +359,8 @@ describe('the RBTreeByIndex class', function() {
 
       expect(tree.size).to.equal(0);
 
-      checkTree(tree);    });
+      checkTree(tree);
+    });
 
     it('should be able to remove 10,001 nodes without error', function() {
       // Note: 10,101 because it looks nicer than '10,000', but for no other reason.
@@ -376,6 +385,24 @@ describe('the RBTreeByIndex class', function() {
       checkEquality(tree, array);
 
       checkTree(tree);
+    });
+  });
+
+  describe('the remove_node function', function() {
+    beforeEach(function() {
+      [0,1,2,3,4,5].forEach(function(index) {
+        tree.insert(index, index);
+      });
+    });
+
+    it('should be able to remove a node that exists', function() {
+      var node = tree.findNode(0);
+      while(node) {
+        tree.remove_node(node);
+        checkTree(tree);
+
+        node = tree.findNode(0);
+      }
     });
   });
 
@@ -412,6 +439,14 @@ describe('the RBTreeByIndex class', function() {
         }
       }
     });
+
+    it('should return null if nothing is found', function() {
+      expect(tree.find(-1)).to.equal(null);
+      expect(tree.find(tree.size)).to.equal(null);
+
+      tree = new RBTreeByIndex();
+      expect(tree.find(0)).to.equal(null);
+    });
   });
 
   describe('the map and each functions', function() {
@@ -442,14 +477,79 @@ describe('the RBTreeByIndex class', function() {
       }
     });
 
-    it('should have a next, prev, depth function', function() {
+    it('should have the following methods', function() {
       var check = function(node) {
         expect(node.getNext).to.be.a('function');
         expect(node.getPrev).to.be.a('function');
         expect(node.depth).to.be.a('function');
         expect(node.traverse_up).to.be.a('function');
         expect(node.position).to.be.a('function');
+      };
 
+      tree.eachNode(check);
+    });
+
+    describe('the getNext method', function() {
+      it('should accept a function as argument', function() {
+        var node = tree.findNode(0);
+        var spy;
+
+        while (node) {
+          spy = chai.spy();
+          node = node.getNext(spy);
+          expect(spy).to.have.been.called;
+        }
+      });
+
+      it('should return next node', function() {
+        var node = tree.findNode(0);
+        var oldPos, pos = -1;
+
+        while (node) {
+          oldPos = pos;
+          pos = node.position();
+          expect(pos).to.equal(oldPos + 1);
+
+          node = node.getNext();
+        }
+      });
+    });
+
+    describe('the getPrev method', function() {
+      it('should accept a function as argument', function() {
+        var node = tree.findNode(tree.size - 1);
+        var spy;
+
+        while (node) {
+          spy = chai.spy();
+          node = node.getPrev(spy);
+          expect(spy).to.have.been.called;
+        }
+      });
+
+      it('should return next node', function() {
+        var node = tree.findNode(tree.size - 1);
+        var oldPos, pos = tree.size;
+
+        while (node) {
+          oldPos = pos;
+          pos = node.position();
+          expect(pos).to.equal(oldPos - 1);
+
+          node = node.getPrev();
+        }
+      });
+    });
+
+    it('should have a prev and next property', function() {
+      var check = function(node) {
+        node.getPrev = chai.spy(function() { return 'foo'; });
+        node.getNext = chai.spy(function() { return 'foo'; });
+        expect(node.next).to.exist;
+        expect(node.prev).to.exist;
+
+        expect(node.getPrev).to.have.been.called.once;
+        expect(node.getNext).to.have.been.called.once;
       };
 
       tree.eachNode(check);
@@ -561,6 +661,12 @@ describe('the RBTreeByIndex class', function() {
 
           node.weight --;
         });
+      });
+    });
+
+    describe('the print function', function() {
+      it('should return a string', function() {
+        expect(utils.print(tree)).to.be.a('string');
       });
     });
   });
