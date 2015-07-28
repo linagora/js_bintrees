@@ -17,7 +17,7 @@ module.exports = function(grunt) {
       },
       options: {
         browserifyOptions: {
-          standalone: 'RBTree'
+          standalone: 'RBTreeByIndex'
         }
       }
     },
