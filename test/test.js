@@ -1,8 +1,11 @@
 /*jslint node: true */
 'use strict';
+var requireHelper = function(path) {
+  return require((process.env.APP_DIR_FOR_CODE_COVERAGE || '') + path);
+};
 
-var RBTreeByIndex = require('../lib/rbtree_by_index');
-var utils = require('../lib/utils');
+var RBTreeByIndex = requireHelper('../lib/rbtree_by_index');
+var utils = requireHelper('../lib/utils');
 
 var expect = require('chai').expect;
 var chai = require('chai');
@@ -64,11 +67,11 @@ var checkTree = function(tree) {
 
   if (errs.length) {
     printTree(tree);
-    console.log(errs)
-  };
+    console.log(errs);
+  }
 
   expect(errs).to.be.true;
-}
+};
 
 describe('the RBTreeByIndex class', function() {
   var tree;
@@ -81,7 +84,7 @@ describe('the RBTreeByIndex class', function() {
     expect(tree.remove).to.be.a('function');
     expect(tree.each).to.be.a('function');
     expect(tree.map).to.be.a('function');
-    expect(tree.find).to.be.a('function')
+    expect(tree.find).to.be.a('function');
 
   });
 
@@ -226,7 +229,7 @@ describe('the RBTreeByIndex class', function() {
         left = nodeList[randIndex];
         right = nodeList[randIndex+1];
 
-        node = tree.insert_between(left, right, randString)
+        node = tree.insert_between(left, right, randString);
         expected.splice(randIndex+1, 0, randString);
         nodeList.splice(randIndex+1, 0, node);
       }
@@ -354,8 +357,9 @@ describe('the RBTreeByIndex class', function() {
       // Note: 10,101 because it looks nicer than '10,000', but for no other reason.
       // First insert 10,000 elements in the tree
       var array = [];
+      var i;
       var position;
-      for (var i = 0; i < 10001; i++) {
+      for (i = 0; i < 10001; i++) {
         position = Math.floor(Math.random() * i);
         tree.insert(position, 'ins ' + i);
         array.splice(position, 0, 'ins ' + i);
@@ -363,7 +367,7 @@ describe('the RBTreeByIndex class', function() {
 
       // Then remove some randomly
 
-      for (var i = 0; i < 10001; i++) {
+      for (i = 0; i < 10001; i++) {
         position = Math.floor(Math.random() * (tree.size -1));
         tree.remove(position);
         array.splice(position, 1);
@@ -377,25 +381,27 @@ describe('the RBTreeByIndex class', function() {
 
   describe('the find function', function() {
     var iMax = 50;
+    var i;
     it('should return the good node', function() {
-      for (var i = 0; i < iMax; i++) {
+      for (i = 0; i < iMax; i++) {
         tree.insert(i, i);
       }
-      for (var i = 0; i < iMax; i++) {
+      for (i = 0; i < iMax; i++) {
         var element = tree.find(i);
         expect(element).to.equal(i);
       }
     });
 
     it('should be able to apply a function on each node traversed', function() {
-      for (var i = 0; i < iMax; i ++) {
+      var i;
+      for (i = 0; i < iMax; i ++) {
         tree.insert(i, i);
       }
 
       var spy = chai.spy();
 
-      for (var i = 0; i < iMax; i++) {
-        var spy = chai.spy();
+      for (i = 0; i < iMax; i++) {
+        spy = chai.spy();
         var node = tree.findNode(i, spy);
 
         // Check it has been called with each parent
@@ -464,6 +470,8 @@ describe('the RBTreeByIndex class', function() {
           expect(node.left).to.not.exist;
         }
       };
+
+      tree.eachNode(check);
     });
 
     it('should be able to find its position', function() {
