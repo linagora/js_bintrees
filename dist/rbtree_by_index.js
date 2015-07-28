@@ -61,7 +61,7 @@ RBTree.prototype.insert_node = function(position, nodeToInsert) {
         node = left;
 
       } else if (right) {
-        position -= (left? left.weight: 0) + 1;
+        position -= (left ? left.weight : 0) + 1;
         node.weight += 1;
         node = right;
 
@@ -121,7 +121,7 @@ RBTree.prototype.rotate = function(side, node) {
 
   if (!node.parent) { // no parent === is_root
     this._root = neighbor;
-  } else if (node === node.parent.get_child(side)){ // node is left child
+  } else if (node === node.parent.get_child(side)) { // node is left child
     node.parent.set_child(side, neighbor); // node's parent left child is now neighbor
   } else {
     node.parent.set_child(side, neighbor, true); // node's parent right child is now neighbor
@@ -131,8 +131,8 @@ RBTree.prototype.rotate = function(side, node) {
   node.parent = neighbor; // set node's parent to neighbor
 
   // update node's weight first, then
-  node.weight = (node.left? node.left.weight: 0) + (node.right? node.right.weight: 0) + 1;
-  neighbor.weight = (neighbor.left? neighbor.left.weight: 0) + (neighbor.right? neighbor.right.weight: 0) + 1;
+  node.weight = (node.left ? node.left.weight : 0) + (node.right ? node.right.weight : 0) + 1;
+  neighbor.weight = (neighbor.left ? neighbor.left.weight : 0) + (neighbor.right ? neighbor.right.weight : 0) + 1;
 };
 
 RBTree.prototype.insert_correction = function(node) {
@@ -142,8 +142,8 @@ RBTree.prototype.insert_correction = function(node) {
     uncle = node.parent.parent.get_child(side, true);
 
     if (uncle && uncle.red) { // if uncle is undefined, it's a leaf so it's black
-      node.parent.red        = false;
-      uncle.red              = false;
+      node.parent.red = false;
+      uncle.red = false;
       node.parent.parent.red = true;
 
       node = node.parent.parent;
@@ -153,10 +153,10 @@ RBTree.prototype.insert_correction = function(node) {
         self.rotate(side, node);
       }
 
-      node.parent.red        = false;
+      node.parent.red = false;
       node.parent.parent.red = true;
 
-      var oppositeSide = side === 'left'? 'right': 'left';
+      var oppositeSide = side === 'left' ? 'right' : 'left';
       self.rotate(oppositeSide, node.parent.parent);
     }
   }
@@ -168,7 +168,7 @@ RBTree.prototype.insert_correction = function(node) {
     // if node's parent is on left of his parent
     if (node.parent === node.parent.parent.get_child('left')) { // Check that there is a grandparent
       helper('left');
-    } else if (node.parent === node.parent.parent.get_child('right')){
+    } else if (node.parent === node.parent.parent.get_child('right')) {
       helper('right');
     }
   }
@@ -186,10 +186,10 @@ RBTree.prototype.find = function() {
   }
 };
 
-/** Find the node at position @position and return it. If no node is found, returns null.
- * It is also possible to pass a function as second argument. It will be called
- * with each node traversed except for the one found.
-**/
+/** Find the node at position and return it. If no node is found, returns null.
+  * It is also possible to pass a function as second argument. It will be called
+  * with each node traversed except for the one found.
+  **/
 RBTree.prototype.findNode = function(position, fun) {
   var left, right;
   // if the weight is 'n', the biggest index is n-1, so we check that position >= size
@@ -224,7 +224,7 @@ RBTree.prototype.findNode = function(position, fun) {
         fun(node);
       }
       node = right;
-      position -= (left? left.weight: 0) + 1;
+      position -= (left ? left.weight : 0) + 1;
 
     } else {
       // this should not happen, except if the position is greater than the size of the tree
@@ -238,7 +238,7 @@ RBTree.prototype.remove = function(position) {
   // if the weight is 'n', the biggest index is n-1, so we check that position >= size
   var nodeToRemove;
 
-  nodeToRemove = this.findNode(position, function(node) { node.weight --; });
+  nodeToRemove = this.findNode(position, function(node) { node.weight--; });
 
   return this.remove_helper(nodeToRemove);
 };
@@ -286,8 +286,8 @@ RBTree.prototype.remove_helper = function(nodeToRemove) {
   // but easier and more efficient)
   if (nextNode !== nodeToRemove) {
     nodeToRemove.data = nextNode.data;
-    nodeToRemove.weight = (nodeToRemove.left? nodeToRemove.left.weight: 0) +
-      (nodeToRemove.right? nodeToRemove.right.weight: 0) + 1;
+    nodeToRemove.weight = (nodeToRemove.left ? nodeToRemove.left.weight : 0) +
+      (nodeToRemove.right ? nodeToRemove.right.weight : 0) + 1;
 
   }
 
@@ -300,7 +300,7 @@ RBTree.prototype.remove_helper = function(nodeToRemove) {
 
 RBTree.prototype.remove_node = function(node) {
   node.traverse_up(function(node, parent) {
-    parent.weight --;
+    parent.weight--;
   });
 
   return this.remove_helper(node);
@@ -315,13 +315,13 @@ RBTree.prototype.remove_correction = function(node, parent) {
 
     if (neighbor && neighbor.red) {
       neighbor.red = false;
-      parent.red   = true;
+      parent.red = true;
 
       self.rotate(side, parent);
       neighbor = parent.get_child(side, true);
     }
 
-    if ((!neighbor.left || !neighbor.left.red) && (!neighbor.right || !neighbor.right.red )) {
+    if ((!neighbor.left || !neighbor.left.red) && (!neighbor.right || !neighbor.right.red)) {
       neighbor.red = true;
       node = parent;
       parent = node.parent;
@@ -332,13 +332,13 @@ RBTree.prototype.remove_correction = function(node, parent) {
         }
         neighbor.red = true;
 
-        oppositeSide = side === 'left'? 'right': 'left';
+        oppositeSide = side === 'left' ? 'right' : 'left';
         self.rotate(oppositeSide, neighbor);
         neighbor = parent.get_child(side, true);
       }
 
-      neighbor.red = parent? parent.red: false;
-      parent.red   = false;
+      neighbor.red = parent ? parent.red : false;
+      parent.red = false;
       if (neighbor.get_child(side, true)) {
         neighbor.get_child(side, true).red = false;
       }
@@ -398,14 +398,14 @@ function Node(data, name) {
 
 Node.prototype.get_child = function(side, opposite) {
   if (opposite) {
-    side = (side === 'left')? 'right': 'left';
+    side = (side === 'left') ? 'right' : 'left';
   }
-  return side === 'left'? this.left: this.right;
+  return side === 'left' ? this.left : this.right;
 };
 
 Node.prototype.set_child = function(side, node, opposite) {
   if (opposite) {
-    side = (side === 'left')? 'right': 'left';
+    side = (side === 'left') ? 'right' : 'left';
   }
 
   if (side === 'left') {
@@ -497,7 +497,7 @@ Node.prototype.traverse_up = function(fun) {
   var parent = this.parent;
   var node = this;
 
-  while(parent) {
+  while (parent) {
     fun(node, parent);
     node = parent;
     parent = parent.parent;
@@ -507,13 +507,13 @@ Node.prototype.traverse_up = function(fun) {
 Node.prototype.depth = function() {
   var depth = 0;
   this.traverse_up(function() {
-    depth ++;
+    depth++;
   });
   return depth;
 };
 
 Node.prototype.position = function() {
-  var position = this.left? this.left.weight: 0;
+  var position = this.left ? this.left.weight : 0;
   var countFun = function(node, parent) {
     if (parent.right === node) {
       // for the left subtree
@@ -531,7 +531,9 @@ Node.prototype.position = function() {
 module.exports = RBTree;
 
 },{"./treebase":2}],2:[function(require,module,exports){
+'use strict';
 
+var Iterator;
 function TreeBase() {}
 
 // removes all nodes from the tree
@@ -544,12 +546,11 @@ TreeBase.prototype.clear = function() {
 TreeBase.prototype.find = function(data) {
     var res = this._root;
 
-    while(res !== null) {
+    while (res !== null) {
         var c = this._comparator(data, res.data);
-        if(c === 0) {
+        if (c === 0) {
             return res.data;
-        }
-        else {
+        } else {
             res = res.get_child(c > 0);
         }
     }
@@ -562,13 +563,12 @@ TreeBase.prototype.findIter = function(data) {
     var res = this._root;
     var iter = this.iterator();
 
-    while(res !== null) {
+    while (res !== null) {
         var c = this._comparator(data, res.data);
-        if(c === 0) {
+        if (c === 0) {
             iter._cursor = res;
             return iter;
-        }
-        else {
+        } else {
             iter._ancestors.push(res);
             res = res.get_child(c > 0);
         }
@@ -583,9 +583,9 @@ TreeBase.prototype.lowerBound = function(item) {
     var iter = this.iterator();
     var cmp = this._comparator;
 
-    while(cur !== null) {
+    while (cur !== null) {
         var c = cmp(item, cur.data);
-        if(c === 0) {
+        if (c === 0) {
             iter._cursor = cur;
             return iter;
         }
@@ -593,9 +593,9 @@ TreeBase.prototype.lowerBound = function(item) {
         cur = cur.get_child(c > 0);
     }
 
-    for(var i=iter._ancestors.length - 1; i >= 0; --i) {
+    for (var i = iter._ancestors.length - 1; i >= 0; --i) {
         cur = iter._ancestors[i];
-        if(cmp(item, cur.data) < 0) {
+        if (cmp(item, cur.data) < 0) {
             iter._cursor = cur;
             iter._ancestors.length = i;
             return iter;
@@ -611,7 +611,7 @@ TreeBase.prototype.upperBound = function(item) {
     var iter = this.lowerBound(item);
     var cmp = this._comparator;
 
-    while(cmp(iter.data(), item) === 0) {
+    while (cmp(iter.data(), item) === 0) {
         iter.next();
     }
 
@@ -621,11 +621,11 @@ TreeBase.prototype.upperBound = function(item) {
 // returns null if tree is empty
 TreeBase.prototype.min = function() {
     var res = this._root;
-    if(res === null) {
+    if (res === null) {
         return null;
     }
 
-    while(res.left !== null) {
+    while (res.left !== null) {
         res = res.left;
     }
 
@@ -635,11 +635,11 @@ TreeBase.prototype.min = function() {
 // returns null if tree is empty
 TreeBase.prototype.max = function() {
     var res = this._root;
-    if(res === null) {
+    if (res === null) {
         return null;
     }
 
-    while(res.right !== null) {
+    while (res.right !== null) {
         res = res.right;
     }
 
@@ -654,9 +654,9 @@ TreeBase.prototype.iterator = function() {
 
 
 TreeBase.prototype.eachNode = function(cb) {
-    var it=this.iterator(), node;
+    var it = this.iterator(), node;
     var index = 0;
-    while((node = it.next()) !== null) {
+    while ((node = it.next()) !== null) {
         cb(node, index);
         index++;
     }
@@ -671,12 +671,12 @@ TreeBase.prototype.each = function(cb) {
 
 
 TreeBase.prototype.mapNode = function(cb) {
-    var it=this.iterator(), node;
+    var it = this.iterator(), node;
     var results = [];
     var index = 0;
-    while((node = it.next()) !== null) {
+    while ((node = it.next()) !== null) {
         results.push(cb(node, index));
-        index ++;
+        index++;
     }
     return results;
 };
@@ -688,11 +688,11 @@ TreeBase.prototype.map = function(cb) {
     });
 };
 
-function Iterator(tree) {
+Iterator = function(tree) {
     this._tree = tree;
     this._ancestors = [];
     this._cursor = null;
-}
+};
 
 Iterator.prototype.data = function() {
     return this._cursor !== null ? this._cursor.data : null;
@@ -701,29 +701,26 @@ Iterator.prototype.data = function() {
 // if null-iterator, returns first node
 // otherwise, returns next node
 Iterator.prototype.next = function() {
-    if(this._cursor === null) {
+    if (this._cursor === null) {
         var root = this._tree._root;
-        if(root !== null) {
+        if (root !== null) {
             this._minNode(root);
         }
-    }
-    else {
-        if(this._cursor.right === null) {
+    } else {
+        if (this._cursor.right === null) {
             // no greater node in subtree, go up to parent
             // if coming from a right child, continue up the stack
             var save;
             do {
                 save = this._cursor;
-                if(this._ancestors.length) {
+                if (this._ancestors.length) {
                     this._cursor = this._ancestors.pop();
-                }
-                else {
+                } else {
                     this._cursor = null;
                     break;
                 }
-            } while(this._cursor.right === save);
-        }
-        else {
+            } while (this._cursor.right === save);
+        } else {
             // get the next node from the subtree
             this._ancestors.push(this._cursor);
             this._minNode(this._cursor.right);
@@ -735,27 +732,24 @@ Iterator.prototype.next = function() {
 // if null-iterator, returns last node
 // otherwise, returns previous node
 Iterator.prototype.prev = function() {
-    if(this._cursor === null) {
+    if (this._cursor === null) {
         var root = this._tree._root;
-        if(root !== null) {
+        if (root !== null) {
             this._maxNode(root);
         }
-    }
-    else {
-        if(this._cursor.left === null) {
+    } else {
+        if (this._cursor.left === null) {
             var save;
             do {
                 save = this._cursor;
-                if(this._ancestors.length) {
+                if (this._ancestors.length) {
                     this._cursor = this._ancestors.pop();
-                }
-                else {
+                } else {
                     this._cursor = null;
                     break;
                 }
-            } while(this._cursor.left === save);
-        }
-        else {
+            } while (this._cursor.left === save);
+        } else {
             this._ancestors.push(this._cursor);
             this._maxNode(this._cursor.left);
         }
@@ -764,7 +758,7 @@ Iterator.prototype.prev = function() {
 };
 
 Iterator.prototype._minNode = function(start) {
-    while(start.left !== null) {
+    while (start.left !== null) {
         this._ancestors.push(start);
         start = start.left;
     }
@@ -772,7 +766,7 @@ Iterator.prototype._minNode = function(start) {
 };
 
 Iterator.prototype._maxNode = function(start) {
-    while(start.right !== null) {
+    while (start.right !== null) {
         this._ancestors.push(start);
         start = start.right;
     }
