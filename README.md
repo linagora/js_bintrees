@@ -5,15 +5,17 @@ This package provides Binary and Red-Black Search Trees written in Javascript. I
 
 Binary Search Trees are a good way to store data in sorted order. A Red-Black tree is a variation of a Binary Tree that balances itself.
 
-Algorithms were taken from Julienne Walker: http://eternallyconfuzzled.com/jsw_home.aspx
+Algorithms were taken from Julienne Walker: http://eternallyconfuzzled.com/jsw_home.aspx and from Introduction to Algorithms, 3rd Edition, Cormen & Lesierson.
 
 Trees
 ------------
 
 * BinTree - Binary Search Tree
 * RBTree - Red-Black Tree
+* RBTreeByIndex - Red-Black Tree, insertion at index not at keys
 
-Quickstart
+
+Install
 ------------
 node.js:
 
@@ -21,6 +23,25 @@ node.js:
 npm install bintrees
 ```
 
+Quickstart for RBTreeByIndex
+----------------------------
+
+```javascript
+var tree = new require('bintree').RBTreeByIndex();
+
+tree.insert(0, 'position 0');
+tree.insert(1, 'position 1');
+// It will shift position 0 and position 1 by 1
+tree.insert(0, 'oops, that`s the real 0 in fact');
+
+var asArray = tree.map(function(data) { return data; });
+// === ['oops, that`s the real 0 in fact', 'position 0', 'position 1']
+```
+
+You can run a benchmark here that show that the RBTree implementation beats a native array implementations for
+insertion and deletion in big arrays. 
+Quickstart for BinTree and RBTree
+---------------------------------
 ```javascript
 var RBTree = require('bintrees').RBTree;
 
