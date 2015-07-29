@@ -4,14 +4,40 @@ module.exports = function(grunt) {
   var CI = grunt.option('ci');
 
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    env: {
+      coverage: {
+        APP_DIR_FOR_CODE_COVERAGE: '../test/coverage/instrument/app/'
+      }
+    },
 
+    instrument: {
+      files: 'lib/*.js',
+      options: {
+        lazy: true,
+        basePath: 'test/coverage/instrument'
+      }
+    },
     mochaTest: {
       test: {
         options: {
           reporter: 'spec'
         },
         src: ['test/test.js']
+      }
+    },
+
+    storeCoverage: {
+      options: {
+        dir: 'test/coverage/reports'
+      }
+    },
+
+    makeReport: {
+      src: 'test/coverage/reports/**/*.json',
+      options: {
+        type: 'lcov',
+        dir: 'test/coverage/reports',
+        print: 'detail'
       }
     },
 
@@ -92,8 +118,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-gjslint');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-lint-pattern');
+  grunt.loadNpmTasks('grunt-env');
+  grunt.loadNpmTasks('grunt-istanbul');
 
   grunt.registerTask('linters', 'Check code for lint', ['jshint:all', 'gjslint:all', 'lint_pattern:all']);
   grunt.registerTask('build', ['browserify', 'uglify']);
-  grunt.registerTask('default', ['linters', 'mochaTest', 'build']);
+  grunt.registerTask('test', ['env:coverage', 'instrument', 'mochaTest', 'storeCoverage', 'makeReport']);
+  grunt.registerTask('default', ['linters', 'test', 'build']);
 };

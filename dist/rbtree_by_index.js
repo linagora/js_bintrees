@@ -24,11 +24,14 @@ RBTree.prototype.insert = function(position, data) {
   if (this.insert_node(position, nodeToInsert)) {
     return nodeToInsert;
   } else {
-    return false;
+    return null;
   }
 };
 
 RBTree.prototype.insert_node = function(position, nodeToInsert) {
+  if (position < 0 || position >= this.weight) {
+    return false;
+  }
   var node = this._root;
   var insertAfter;
   var left, right;
@@ -197,10 +200,6 @@ RBTree.prototype.findNode = function(position, fun) {
     return null;
   }
   var node = this._root;
-
-  if (!node) {
-    return null;
-  }
 
   // Find node to delete
   while (position > 0 || (position === 0 && node.left)) {
@@ -539,7 +538,6 @@ function TreeBase() {}
 // removes all nodes from the tree
 TreeBase.prototype.clear = function() {
     this._root = null;
-    this.size = 0;
 };
 
 // returns node data if found, null otherwise
